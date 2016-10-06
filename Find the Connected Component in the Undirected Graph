@@ -1,0 +1,48 @@
+/**
+ * Definition for Undirected graph.
+ * struct UndirectedGraphNode {
+ *     int label;
+ *     vector<UndirectedGraphNode *> neighbors;
+ *     UndirectedGraphNode(int x) : label(x) {};
+ * };
+ */
+class Solution {
+public:
+    /**
+     * @param nodes a array of Undirected graph node
+     * @return a connected set of a Undirected graph
+     */
+    vector<vector<int>> connectedSet(vector<UndirectedGraphNode*>& nodes) {
+        // Write your code here
+        unordered_set<int> visited;
+        vector<vector<int>> result;
+        for(auto node : nodes) {
+            if(visited.find(node->label) == visited.end()) {
+                visited.insert(node->label);
+                result.push_back(bfs(nodes, node, visited));
+            }
+        }
+        return result;
+    }
+    
+    vector<int> bfs(vector<UndirectedGraphNode*>& nodes, UndirectedGraphNode* node, unordered_set<int>& visited) {
+        vector<int> result;
+        queue<UndirectedGraphNode*> q;
+        q.push(node);
+        
+        while(!q.empty()) {
+            UndirectedGraphNode* curNode = q.front();
+            result.push_back(curNode->label);
+            q.pop();
+            for(auto n : curNode->neighbors) {
+                if(visited.find(n->label) == visited.end()) {
+                    visited.insert(n->label);
+                    q.push(n);
+                }
+            }
+        }
+        sort(result.begin(), result.end());
+        return result;
+        
+    }
+};
