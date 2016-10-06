@@ -1,0 +1,51 @@
+struct Node {
+    int val;
+    int r;
+    int c;
+    Node(int val, int r, int c) : val(val), r(r), c(c) {}
+    
+    bool operator < (const Node &node) const {
+        return val > node.val;
+    }
+};
+
+class Solution {
+public:
+    /**
+     * @param A an integer arrays sorted in ascending order
+     * @param B an integer arrays sorted in ascending order
+     * @param k an integer
+     * @return an integer
+     */
+    int kthSmallestSum(vector<int>& A, vector<int>& B, int k) {
+        if(A.empty() || B.empty() || k <= 0) return -1;
+        
+        int rows = A.size();
+        int cols = B.size();
+        
+        if(k > rows * cols) return -1;
+        
+        priority_queue<Node> pq;
+        vector<vector<bool> > visited (rows, vector<bool> (cols, false));
+        pq.push(Node(A[0] + B[0], 0, 0));
+        
+        while(k > 0) {
+            Node curNode = pq.top();
+            if(k == 1) return curNode.val;
+            pq.pop();
+            k--;
+            int r = curNode.r;
+            int c = curNode.c;
+            if(r + 1 < rows && !visited[r + 1][c]) {
+                pq.push(Node(A[r + 1] + B[c], r + 1, c));
+                visited[r + 1][c] = true;
+            }
+            
+            if(c + 1 < cols && !visited[r][c + 1]) {
+                pq.push(Node(A[r] + B[c + 1], r, c + 1));
+                visited[r][c + 1] = true;
+            }
+        }
+        return -1;
+    }
+};
