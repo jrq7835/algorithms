@@ -1,0 +1,87 @@
+/**
+ * Definition for a point.
+ * struct Point {
+ *     int x;
+ *     int y;
+ *     Point() : x(0), y(0) {}
+ *     Point(int a, int b) : x(a), y(b) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * @param n an integer
+     * @param m an integer
+     * @param operators an array of point
+     * @return an integer array
+     */
+    vector<int> numIslands2(int n, int m, vector<Point>& operators) {
+        // Write your code here
+        vector<vector<int> > matrix (n, vector<int> (m, -1));
+        vector<int> result;
+        int count = 0;
+        for(int i = 0; i < operators.size(); ++i) {
+            Point curPoint = operators[i];
+            int r = curPoint.x;
+            int c = curPoint.y;
+            if(matrix[r][c] == -1) {
+                matrix[r][c] = getIslandNumber(r, c, m);
+                count++;
+                if(r - 1 >= 0) {
+                    if(matrix[r - 1][c] != -1)
+                        unionIslands(r, c, r - 1, c, matrix, count);
+                }
+                if(r + 1 < n) {
+                    if(matrix[r + 1][c] != -1)
+                        unionIslands(r, c, r + 1, c, matrix, count);
+                }
+                if(c - 1 >= 0) {
+                    if(matrix[r][c - 1] != -1)
+                        unionIslands(r, c, r, c - 1, matrix, count);
+                }
+                if(c + 1 < m) {
+                    if(matrix[r][c + 1] != -1)
+                        unionIslands(r, c, r, c + 1, matrix, count);
+                }
+            }
+            result.push_back(count);
+        }
+        return result;
+    }
+    
+    int getIslandNumber(int r, int c, int cols) {
+        return r * cols + c;
+    }
+    
+    Point getPoint(int val, int cols) {
+        int x = val / cols;
+        int y = val % cols;
+        return Point(x, y);
+    }
+    
+    
+    int findRoot(int r, int c, vector<vector<int> > &matrix) {
+        int curNum = getIslandNumber(r, c, matrix[0].size());
+        if(matrix[r][c] == curNum) {
+            return curNum;
+        } else {
+            int cols = matrix[0].size();
+            Point curPoint = Point(r, c);
+            while(matrix[curPoint.x][curPoint.y] != curNum) {
+                curPoint = getPoint(matrix[curPoint.x][curPoint.y], cols);
+                curNum = getIslandNumber(curPoint.x, curPoint.y, cols);
+            }
+            return curNum;
+        }
+    }
+    
+    void unionIslands(int r1, int c1, int r2, int c2, vector<vector<int> > &matrix, int &count) {
+        int root1 = findRoot(r1, c1, matrix);
+        int root2 = findRoot(r2, c2, matrix);
+        if(root1 != root2) {
+            Point root1P = getPoint(root1, matrix[0].size());
+            matrix[root1P.x][root1P.y] = root2;
+            count--;
+        }
+    }
+};
