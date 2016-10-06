@@ -1,0 +1,51 @@
+class Solution {
+public:
+    /**
+     * @param board a 2D board containing 'X' and 'O'
+     * @return void
+     */
+    void surroundedRegions(vector<vector<char>>& board) {
+        if(board.empty()) return;
+        int rows = board.size();
+        int cols = board[0].size();
+        for(int c = 0; c < cols; ++c) {
+            if(board[0][c] == 'O') {
+                markNeighbors(0, c, board);
+            }
+            if(board[rows - 1][c] == 'O') {
+                markNeighbors(rows - 1, c, board);
+            }
+        }
+        
+        for(int r = 0; r < rows; ++r) {
+            if(board[r][0] == 'O') {
+                markNeighbors(r, 0, board);
+            } 
+            if(board[r][cols - 1] == 'O') {
+                 markNeighbors(r, cols - 1, board);
+            }
+        }
+        
+        for(int r = 0; r < rows; ++r) {
+            for(int c = 0; c < cols; ++c) {
+                if(board[r][c] == 'O') {
+                    board[r][c] = 'X';
+                } else if(board[r][c] == 'E') {
+                    board[r][c] = 'O';
+                }
+            }
+        }
+    }
+    
+    void markNeighbors(int r, int c, vector<vector<char>>& board) {
+        if(r >= 0 && r < board.size() && c >= 0 && c < board[0].size()) {
+            if(board[r][c] != 'E' && board[r][c] != 'X') {
+                board[r][c] = 'E';
+                markNeighbors(r - 1, c, board);
+                markNeighbors(r + 1, c, board);
+                markNeighbors(r, c + 1, board);
+                markNeighbors(r, c - 1, board);
+            }
+        }
+    }
+};
