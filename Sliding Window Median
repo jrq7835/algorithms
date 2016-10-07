@@ -1,0 +1,95 @@
+class Solution {
+public:
+    /**
+     * @param nums: A list of integers.
+     * @return: The median of the element inside the window at each moving
+     */
+    //put value case 1, highSet.size() < lowSet.size()
+    void putValue1(multiset<int> &lowSet, multiset<int> &highSet, int val) {
+        int highestLowVal = *(--lowSet.end());
+        if(highestLowVal <= val) {
+            highSet.insert(val);
+        } else {
+            highSet.insert(highestLowVal);
+            lowSet.erase(--lowSet.end());
+            lowSet.insert(val);
+        }
+    }
+    
+    //put value case 2, highSet.size() > lowSet.size()
+    void putValue2(multiset<int> &lowSet, multiset<int> &highSet, int val) {
+        int lowestHigh = *highSet.begin();
+        if(lowestHigh >= val) {
+            lowSet.insert(val);
+        } else {
+            lowSet.insert(lowestHigh);
+            highSet.erase(highSet.begin());
+            highSet.insert(val);
+        }
+    }
+    
+    //put value case 3, highSet.size() == lowSet.size()
+    void putValue3(multiset<int> &lowSet, multiset<int> &highSet, int val) {
+        int highestLowVal = *(--lowSet.end());
+        if(highestLowVal <= val) {
+            highSet.insert(val);
+        } else {
+            lowSet.insert(val);
+        }
+    }
+    
+    int findMedian(multiset<int> &lowSet, multiset<int> &highSet) {
+        int median = 0;
+        if(lowSet.size() >= highSet.size()) {
+            multiset<int>::iterator it = --lowSet.end();
+            median = *it;
+        } else {
+            median = *highSet.begin();
+        }
+        return median;
+    }
+    
+    void removeVal(multiset<int> &lowSet, multiset<int> &highSet, int val) {
+        if(lowSet.count(val) != 0) {
+            lowSet.erase(lowSet.find(val));
+        } else {
+            highSet.erase(highSet.find(val));
+        }
+    }
+    
+    void putVal(multiset<int> &lowSet, multiset<int> &highSet, int val) {
+        if(highSet.size() < lowSet.size()) {
+            putValue1(lowSet, highSet, val);
+        } else if (highSet.size() > lowSet.size()) {
+            putValue2(lowSet, highSet, val);
+        } else {
+            putValue3(lowSet, highSet, val);
+        }
+    }
+    
+    vector<int> medianSlidingWindow(vector<int> &nums, int k) {
+        vector<int> result;
+        if(k == 0 || k > nums.size() || nums.empty()) return result;
+        if(k == 1) return nums;
+    
+        int mid = k / 2; 
+        multiset<int> lowSet;
+        multiset<int> highSet;
+        
+        lowSet.insert(nums[0]);
+        
+        for(int i = 1; i < k; ++i) {
+            putVal(lowSet, highSet, nums[i]);
+        }
+        
+        for(int i = k; i < nums.size(); ++i) {
+            result.push_back(findMedian(lowSet, highSet));
+            removeVal(lowSet, highSet, nums[i - k]);
+            putVal(lowSet, highSet, nums[i]);
+        }
+        
+        result.push_back(findMedian(lowSet, highSet));
+        return result;
+    }
+    
+};
