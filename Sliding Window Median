@@ -72,7 +72,6 @@ public:
         if(k == 0 || k > nums.size() || nums.empty()) return result;
         if(k == 1) return nums;
     
-        int mid = k / 2; 
         multiset<int> lowSet;
         multiset<int> highSet;
         
