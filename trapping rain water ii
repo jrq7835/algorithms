@@ -1,0 +1,72 @@
+class Solution {
+public:
+    /**
+     * @param heights: a matrix of integers
+     * @return: an integer
+     */
+    struct Node {
+        int r;
+        int c;
+        int height;
+        Node(int r, int c, int height) : r(r), c(c), height(height) {}
+        
+        bool operator < (const Node& node) const {
+            return height > node.height;
+        }
+    };
+     
+     
+    int trapRainWater(vector<vector<int> > &heights) {
+        if(heights.empty()) return 0;
+        int result = 0;
+        int rows = heights.size();
+        int cols = heights[0].size();
+        vector<vector<bool> > visited (rows, vector<bool> (cols, false));
+        priority_queue<Node> pq;
+        
+        //put first and last row into the pq
+        for(int c = 0; c < cols; ++c) {
+            pq.push(Node(0, c, heights[0][c]));
+            pq.push(Node(rows - 1, c, heights[rows - 1][c]));
+            visited[0][c] = true;
+            visited[rows - 1][c] = true;
+        }
+        
+        //put first and last col into the pq
+        for(int r = 1; r < rows - 1; ++r) {
+            pq.push(Node(r, 0, heights[r][0]));
+            pq.push(Node(r, cols - 1, heights[r][cols - 1]));
+            visited[r][0] = true;
+            visited[r][cols - 1] = true;
+        }
+        
+        while(!pq.empty()) {
+            Node curNode = pq.top();
+            pq.pop();
+            int r = curNode.r;
+            int c = curNode.c;
+            int h = curNode.height;
+            checkNode(pq, heights, visited, r - 1, c, h, result);
+            checkNode(pq, heights, visited, r + 1, c, h, result);
+            checkNode(pq, heights, visited, r, c - 1, h, result);
+            checkNode(pq, heights, visited, r, c + 1, h, result);
+        }
+        return result;
+    }
+    
+    void checkNode(priority_queue<Node> &pq, vector<vector<int> > &heights, 
+                    vector<vector<bool> > &visited, int r, int c, int h, int &result) {
+        
+        if(r >= 0 && r < heights.size() && c >= 0 && c < heights[0].size()) {
+            if(!visited[r][c]) {
+                visited[r][c] = true;
+                if(heights[r][c] <= h) {
+                    result += h - heights[r][c];
+                    pq.push(Node(r, c, h));
+                } else {
+                    pq.push(Node(r, c, heights[r][c]));
+                }
+            }
+        }
+    }
+};
