@@ -1,0 +1,41 @@
+class Solution {
+public:
+    /**
+     * @param s : A string
+     * @return : The length of the longest substring 
+     *           that contains at most k distinct characters.
+     */
+    int lengthOfLongestSubstringKDistinct(string s, int k) {
+        if(s.length() == 0 || k <= 0) return 0;
+        if(k >= s.length()) return s.length();
+        
+        vector<int> map (256, 0);
+        int result = 0;
+        int numDiffChar = 0;
+        int left = 0;
+        int right = 0;
+        
+        while(right < s.length()) {
+            while(right < s.length() && numDiffChar < k) {
+                if(map[s[right]] == 0) numDiffChar++;
+                map[s[right]]++;
+                right++;
+            }
+            
+            while(right < s.length() && map[s[right]] != 0) {
+                map[s[right]]++;
+                right++;
+            }
+            
+            result = right - left > result ? right - left : result;
+            while(numDiffChar == k) {
+                if(map[s[left]] == 1) numDiffChar--;
+                map[s[left]]--;
+                left++;
+            }
+        }
+        
+        return result;
+        
+    }
+};
