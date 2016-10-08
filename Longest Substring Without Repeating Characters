@@ -1,0 +1,32 @@
+class Solution {
+public:
+    /**
+     * @param s: a string
+     * @return: an integer 
+     */
+    int lengthOfLongestSubstring(string s) {
+        if(s.length() <= 1) return s.length();
+        
+        int result = 0;
+        int curLen = 0;
+        int left = 0;
+        int right = 0;
+        vector<bool> map (256, false);
+        
+        while(right < s.length()) {
+            while(right < s.length() && !map[s[right]]) {
+                map[s[right]] = true;
+                curLen++;
+                right++;
+            }
+            
+            result = curLen > result ? curLen : result;
+            
+            map[s[left]] = false;
+            curLen--;
+            left++;
+        }
+        
+        return result;
+    }
+};
