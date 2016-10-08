@@ -1,0 +1,66 @@
+class Solution {
+public:    
+    /**
+     * @param source: A string
+     * @param target: A string
+     * @return: A string denote the minimum window
+     *          Return "" if there is no such a string
+     */
+    string minWindow(string &source, string &target) {
+        // write your code here
+        if(source.length() == 0 || target.length() == 0) return "";
+        
+        vector<int> mapT (256, 0);
+        vector<int> mapS (256, 0);
+        
+        int numDistinctChars = 0;
+        
+        for(char c : target) {
+            if(mapT[c] == 0) {
+                mapT[c] = 1;
+                numDistinctChars++;
+            } else {
+                mapT[c]++;
+            }
+        }
+        
+        string result = source + " ";
+        
+        int left = 0;
+        int right = 0;
+        int numChars = 0;
+        while(right < source.size()) {
+            while(right < source.size() && numChars < numDistinctChars) {
+                if(mapT[source[right]] != 0) {
+                    mapS[source[right]]++;
+                    if(mapT[source[right]] == mapS[source[right]]) numChars++;
+                } 
+                right++;
+            }
+            
+            if(right == source.size() && numChars < numDistinctChars) break;
+            
+            while(true) {
+                if(mapS[source[left]] == 0) {
+                    left++;
+                    continue;
+                }
+                if(mapS[source[left]] == mapT[source[left]]) break;
+                mapS[source[left]]--;
+                left++;
+            }
+            
+            if(result.length() > right - left) {
+                result = source.substr(left, right - left);
+            }
+            
+            mapS[source[left]]--;
+            left++;
+            numChars--;
+        }
+        
+        if(result.length() > source.length()) return "";
+        
+        return result;
+    }
+};
