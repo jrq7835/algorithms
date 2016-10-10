@@ -1,0 +1,51 @@
+class Solution {
+public:
+    /**
+     * @param nums: a vector of integers
+     * @return: an integer
+     */
+    int maxProduct(vector<int>& nums) {
+        if(nums.empty()) return 0;
+        if(nums.size() == 1) return nums[0];
+        int max = INT_MIN;
+        
+        int start = 0;
+        int negStart = -1;
+        int negEnd = -1;
+        int negCount = 0;
+        for(int i = 0; i < nums.size(); ++i) {
+            if(nums[i] < 0) {
+                negCount++;
+                if(negStart == -1) negStart = i;
+                negEnd = i;
+            } else if(nums[i] == 0) {
+                if(negCount % 2 == 0) negStart = -1;
+                int p = helper(nums, start, i - 1, negStart, negEnd);
+                max = p > max ? p : max;
+                start = i + 1;
+                negStart = -1;
+                negEnd = -1;
+                negCount = 0;
+            }
+        }
+        if(negCount % 2 == 0) negStart = -1;
+        int p = helper(nums, start, nums.size() - 1, negStart, negEnd);
+        max = p > max ? p : max;
+        
+        return max;
+    }
+    
+    int helper(vector<int>& nums, int start, int end, int negStart, int negEnd) {
+        int p = 1;
+        if(negStart == -1) {
+            for(int i = start; i <= end; ++i) p *= nums[i];
+            return p;
+        } else {
+            int p1 = 1;
+            int p2 = 1;
+            for(int i = negStart + 1; i <= end; ++i) p1 *= nums[i];
+            for(int i = start; i <= negEnd - 1; ++i) p2 *= nums[i];
+            return p1 > p2 ? p1 : p2;
+        }
+    }
+};
