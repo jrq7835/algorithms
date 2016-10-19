@@ -1,0 +1,43 @@
+class Solution {
+public:
+    /**
+     * @param A an integer array
+     * @param V an integer array
+     * @param m an integer
+     * @return an array
+     */
+    int backPackIII(vector<int>& A, vector<int>& V, int m) {
+        if(A.empty() || V.empty() || m <= 0) return 0;
+        int rows = A.size() + 1;
+        int cols = m + 1;
+        vector<vector<int> > dp (rows, vector<int> (cols, 0));
+        
+        for(int r = 1; r < rows; ++r) {
+            int curSize = A[r - 1];
+            int curVal = V[r - 1];
+            
+            int j = 1;
+            while(j * curSize < cols) {
+                dp[r][j * curSize] = j * curVal;
+                j++;
+            }
+            
+            for(int c = 1; c < cols; ++c) {
+                if(dp[r - 1][c] != 0) {
+                    dp[r][c] = max(dp[r][c], dp[r - 1][c]);
+                    int k = 1;
+                    while(c + k * curSize < cols) {
+                        dp[r][c + k * curSize] = max(dp[r][c] + k * curVal, dp[r][c + k * curSize]);
+                        k++;
+                    }
+                }
+            }
+        }
+        
+        int result = 0;
+        for(int c = 0; c < cols; ++c) {
+            result = max(result, dp[rows - 1][c]);
+        }
+        return result;
+    }
+};
