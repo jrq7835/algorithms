@@ -1,0 +1,44 @@
+class Solution {
+public:
+    /**
+     * @param m: An integer m denotes the size of a backpack
+     * @param A & V: Given n items with size A[i] and value V[i]
+     * @return: The maximum value
+     */
+    int backPackII(int m, vector<int> A, vector<int> V) {
+        if(A.empty() || V.empty() || m <= 0) return 0;
+        int rows = A.size() + 1;
+        int cols = m + 1;
+        vector<vector<int> > dp (rows, vector<int> (cols, 0));
+        
+        for(int r = 1; r < rows; ++r) {
+            int curSize = A[r - 1];
+            int curVal = V[r - 1];
+            if(curSize < cols) {
+                dp[r][curSize] = curVal;
+            }
+            
+            for(int c = 1; c < cols; ++c) {
+                if(dp[r - 1][c] != 0) {
+                    if(dp[r][c] == 0) {
+                        dp[r][c] = dp[r - 1][c];
+                        if(c + curSize < cols) {
+                            dp[r][c + curSize] = dp[r][c] + curVal;
+                        }
+                    } else {
+                        if(c + curSize < cols) {
+                            dp[r][c + curSize] = dp[r - 1][c] + curVal;
+                        }
+                        dp[r][c] = max(dp[r][c], dp[r - 1][c]);
+                    }
+                }
+            }
+        }
+        
+        int result = 0;
+        for(int c = 0; c < cols; ++c) {
+            result = max(result, dp[rows - 1][c]);
+        }
+        return result;
+    }
+};
