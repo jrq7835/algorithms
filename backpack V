@@ -1,0 +1,34 @@
+class Solution {
+public:
+    /**
+     * @param nums an integer array and all positive numbers
+     * @param target an integer
+     * @return an integer
+     */
+    int backPackV(vector<int>& nums, int target) {
+        if(nums.empty() || target <= 0) return 0;
+        int rows = nums.size() + 1;
+        int cols = target + 1;
+        
+        vector<int> pre (cols, 0);
+        vector<int> cur (cols, 0);
+        
+        for(int r = 1; r < rows; ++r) {
+            int curSize = nums[r - 1];
+            if(curSize < cols) cur[curSize] = pre[curSize] + 1;
+            for(int c = 0; c < cols; ++c) {
+                if(pre[c] != 0) {
+                    cur[c] = max(cur[c], pre[c]);
+                    int increment = pre[c];
+                    if(c + curSize < cols) { 
+                        cur[c + curSize] = 
+                        max(cur[c + curSize], pre[c + curSize] + increment);
+                    }
+                }
+            }
+            pre = cur;
+        }
+        
+        return cur[target];
+    }
+};
