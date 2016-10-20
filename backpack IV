@@ -1,0 +1,41 @@
+class Solution {
+public:
+    /**
+     * @param nums an integer array and all positive numbers, no duplicates
+     * @param target an integer
+     * @return an integer
+     */
+    int backPackIV(vector<int>& nums, int target) {
+        if(nums.empty() || target <= 0) return 0;
+        
+        int rows = nums.size() + 1;
+        int cols = target + 1;
+        
+        vector<vector<int> > dp (rows, vector<int> (cols, 0));
+        
+        for(int r = 1; r < rows; ++r) {
+            int curSize = nums[r - 1];
+            int j = 1;
+            while(j * curSize < cols) {
+                dp[r][j * curSize] = dp[r - 1][j * curSize] + 1;
+                j++;
+            }
+            
+            for(int c = 0; c < cols; ++c) {
+                if(dp[r - 1][c] != 0) {
+                    dp[r][c] = max(dp[r - 1][c],dp[r][c]);
+                    int k = 1;
+                    
+                    int increment = dp[r - 1][c];
+                    while(c + k * curSize < cols) {
+                        dp[r][c + k * curSize] = 
+                        max(dp[r - 1][c + k * curSize] + increment, dp[r][c + k * curSize] + increment);
+                        k++;
+                    }
+                }
+            }
+        }
+        
+        return dp[rows - 1][target];
+    }
+};
